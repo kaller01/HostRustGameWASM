@@ -19,7 +19,6 @@ const idmap = {};
 const players = {};
 
 io.on('connection', (socket) => {
-  console.log('a user connected', socket.id);
   idmap[socket.id] = Math.floor(Math.random() * 4294967295);
   players[idmap[socket.id]] = {
     x: 0,
@@ -31,18 +30,20 @@ io.on('connection', (socket) => {
     }
   }
 
-  socket.on('player_pos', (data) => {
+  socket.on('update_player', (data) => {
     delete players[idmap[socket.id]];
     socket.emit('players_update', players);
     players[idmap[socket.id]] = {
-      x: data.x,
-      y: data.y,
-      color: data.color
+      x: data.x || 0,
+      y: data.y || 0,
+      color: data.color, 
+      name: data.name || ""
     }
   });
 
   socket.on('disconnect', () => {
     delete players[idmap[socket.id]];
+    io.emit("player_disconnect", idmap[socket.id]);
     delete idmap[socket.id];
   });
 
