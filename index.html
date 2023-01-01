@@ -22,7 +22,51 @@
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
     <script src="gl.js"></script>
-    <script>load("rustgame.wasm");</script> <!-- Your compiled wasm file -->
+    <script>
+        load("rustgame.wasm");
+    </script> <!-- Your compiled wasm file -->
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        let color = null;
+
+        setInterval(() => {
+            if (wasm_exports == undefined) return;
+            let player_x = wasm_exports.get_player_pos_x();
+            let player_y = wasm_exports.get_player_pos_y();
+            // if(color == null){
+            //     color = {
+            //         r: wasm_exports.get_player_color_r(),
+            //         g: wasm_exports.get_player_color_g(),
+            //         b: wasm_exports.get_player_color_b()
+            //     }
+            // }
+
+            socket.emit("player_pos", {
+                x: player_x,
+                y: player_y,
+                color
+            });
+            // if(color != null){
+            //     wasm_exports.set_player_color()
+            // }
+
+        }, 100)
+
+        // socket.on('your_color', function (new_color) {
+        //     color = new_color
+        // });
+
+        socket.on('players_update', function (players) {
+            if (wasm_exports == undefined) return;
+            for (const [key, value] of Object.entries(players)) {
+                // console.log(value);
+                wasm_exports.update_players_pos(key, value.x, value.y, 0, 0, 0);
+            }
+
+        });
+    </script>
 </body>
 
 </html>
