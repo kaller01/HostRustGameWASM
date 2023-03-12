@@ -23,11 +23,8 @@ io.on('connection', (socket) => {
   players[idmap[socket.id]] = {
     x: 0,
     y: 0,
-    color: {
-      r: 0,
-      g: 0,
-      b: 0
-    }
+    vx: 0,
+    vy: 0
   }
 
   socket.on('update_player', (data) => {
@@ -36,7 +33,8 @@ io.on('connection', (socket) => {
     players[idmap[socket.id]] = {
       x: data.x || 0,
       y: data.y || 0,
-      color: data.color, 
+      vx: data.vx || 0,
+      vy: data.vy || 0,
       name: data.name || ""
     }
   });
