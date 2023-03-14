@@ -39,6 +39,13 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('event', (data) => {
+    //Should probably do some checks
+    data.id = idmap[socket.id];
+    console.log(data);
+    socket.broadcast.emit("event", data);
+  });
+
   socket.on('disconnect', () => {
     delete players[idmap[socket.id]];
     io.emit("player_disconnect", idmap[socket.id]);
